@@ -3,6 +3,7 @@ const loadData=async(searchText,dataLimit)=>{
     const res=await fetch(url)
     const data=await res.json()
     displyData(data.data,dataLimit);
+    // console.log(data.data);
     
 
 }
@@ -40,7 +41,8 @@ const displyData=(phones,dataLimit)=>{
                 <div class="card-body">
                 <h4>${phones.brand}</h4>
                     <h5 class="card-title">${phones.phone_name}</h5>
-                    <p class="card-text"> ${phones.slug}</p>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <button onclick="loadPhoneDetails('${phones.slug}')" href="#" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#exampleModal">Show Details</button>
                 </div>
             </div>
         </div>
@@ -55,12 +57,21 @@ const processSeaerch=(dataLimit)=>{
     const searchText=searchField.value;
     loadData(searchText,dataLimit)
 }
+
+//search btn handler
 document.getElementById('search-btn').addEventListener('click',function(){
 
     // loading toggle 
     processSeaerch(10);
     
 })
+
+// search field handle to Enter key 
+document.getElementById("search-field").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        processSeaerch(10);
+    }
+});
 
 const toggleSpiner=isLoading=>{
     const loderSection=document.getElementById('loder');
@@ -75,4 +86,22 @@ document.getElementById('show-all-btn').addEventListener('click',function(){
     processSeaerch();
 })
 
-loadData();
+const loadPhoneDetails=async id=>{
+    const url=`https://openapi.programming-hero.com/api/phone/${id}`;
+    const res=await fetch(url);
+    const data=await res.json();
+    displayPhoneDetails(data.data);
+}
+const displayPhoneDetails=(phone)=>{
+    console.log(phone)
+    const modalTitle=document.getElementById('exampleModalLabel');
+    modalTitle.innerText=phone.name;
+    const phoneDetails=document.getElementById('phone-details');
+    phoneDetails.innerHTML=`
+    <P>Storage : '${phone.mainFeatures.storage ?phone.mainFeatures.storage :"no storge memory"}'</p>
+    <p>ReleaseDate : ${phone.releaseDate}</p>
+    <img src="${phone.image}" alt="">
+    <p>Brand: ${phone.brand}</p>
+    `
+}
+loadData('apple');
